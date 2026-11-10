@@ -10,7 +10,7 @@ public class EnterpriseSearchDocument {
     private String content;
 
     @JsonProperty("source_system")
-    private String sourceSystem;
+    private String sourceSystem = "Alfresco";
 
     @JsonProperty("file_type")
     private String fileType;

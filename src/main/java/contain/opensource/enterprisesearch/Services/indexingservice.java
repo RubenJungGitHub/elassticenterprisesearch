@@ -1,15 +1,18 @@
-package contain.opensource.enterprisesearch.Services;
+package contain.opensource.enterprisesearch.services;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
+import contain.opensource.enterprisesearch.model.EnterpriseSearchDocument;
+import co.elastic.clients.elasticsearch.core.IndexResponse;
+
 import org.springframework.stereotype.Service;
 
 @Service
-public class IndexingService {
-
+public class indexingservice
+    {
     private final ElasticsearchClient esClient;
 
-    public IndexingService(ElasticsearchClient esClient) {
+    public indexingservice(ElasticsearchClient esClient) {
         this.esClient = esClient;
     }
 

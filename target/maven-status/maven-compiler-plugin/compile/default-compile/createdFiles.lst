@@ -1,4 +1,6 @@
-contain\opensource\uuidutil\Main.class
-contain\opensource\uuidutil\controllers\UUIDController.class
-META-INF\spring-configuration-metadata.json
-contain\opensource\uuidutil\classes\UUIDUtil.class
+contain\opensource\enterprisesearch\services\indexingservice.class
+contain\opensource\enterprisesearch\controllers\SyncController.class
+contain\opensource\enterprisesearch\model\EnterpriseSearchDocument.class
+contain\opensource\enterprisesearch\SearchApplication.class
+contain\opensource\enterprisesearch\services\AlfrescoSyncScheduler.class
+contain\opensource\enterprisesearch\services\AlfrescoSyncService.class

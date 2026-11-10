@@ -1,7 +1,6 @@
-package contain.opensource.enterprisesearch.Services;
+package contain.opensource.enterprisesearch.services;
 
-import com.contain.search.model.EnterpriseSearchDocument;
-import com.contain.search.service.IndexingService;
+import contain.opensource.enterprisesearch.model.EnterpriseSearchDocument;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +10,9 @@ import java.util.List;
 @Component
 public class AlfrescoSyncScheduler {
 
-    private final IndexingService indexingService;
+    private final indexingservice indexingService;
 
-    public AlfrescoSyncScheduler(IndexingService indexingService) {
+    public AlfrescoSyncScheduler(indexingservice indexingService) {
         this.indexingService = indexingService;
     }
 
