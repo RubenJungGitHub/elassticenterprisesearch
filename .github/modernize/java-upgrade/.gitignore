@@ -1,0 +1,26 @@
+# --- Maven Build & Target ---
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# --- IDE Specifiek (VS Code, IntelliJ, Eclipse) ---
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# --- Besturingssysteem Bestanden ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.DS_Store
+*._*
+
+# --- Logbestanden en tijdelijke bestanden ---
+*.log
+*.tmp
+*.bak

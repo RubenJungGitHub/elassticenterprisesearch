@@ -23,7 +23,7 @@ public class SyncController {
     public ResponseEntity<String> triggerManualSync() {
         try {
             // Roep dezelfde logica aan
-            syncService.executeSync();
+            syncService.syncChangesFromAlfresco();
             return ResponseEntity.ok("[SUCCESS] Manual Alfresco synchronization triggered and completed.");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("[ERROR] Sync failed: " + e.getMessage());
@@ -35,7 +35,7 @@ public class SyncController {
     public void triggerScheduledSync() {
         System.out.println("[INFO] Scheduled sync triggered automatically.");
         try {
-            syncService.executeSync();
+            syncService.syncChangesFromAlfresco();
         } catch (Exception e) {
             System.err.println("[ERROR] Scheduled sync failed: " + e.getMessage());
         }
