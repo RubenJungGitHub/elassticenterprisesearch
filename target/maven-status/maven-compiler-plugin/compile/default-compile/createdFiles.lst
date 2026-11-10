@@ -1,0 +1,4 @@
+contain\opensource\uuidutil\Main.class
+contain\opensource\uuidutil\controllers\UUIDController.class
+META-INF\spring-configuration-metadata.json
+contain\opensource\uuidutil\classes\UUIDUtil.class
