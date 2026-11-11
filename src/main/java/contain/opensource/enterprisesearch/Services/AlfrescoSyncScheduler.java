@@ -1,29 +1,32 @@
 package contain.opensource.enterprisesearch.services;
 
-import contain.opensource.enterprisesearch.model.EnterpriseSearchDocument;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.util.List;
 
 @Component
 public class AlfrescoSyncScheduler {
 
-    private final IndexingService indexingService;
+    private final AlfrescoSyncService alfrescoSyncService;
 
-    public AlfrescoSyncScheduler(IndexingService indexingService) {
-        this.indexingService = indexingService;
-    }
+    public AlfrescoSyncScheduler(AlfrescoSyncService alfrescoSyncService) {
+        this.alfrescoSyncService = alfrescoSyncService;
+    }        
 
     // Optie A: Draait elke 10 minuten (600.000 milliseconden) nadat de vorige run is voltooid
-    @Scheduled(fixedDelay = 10)
+
     // Optie B (Alternatief): Elke nacht om 02:00 uur via een cron-expressie
     // @Scheduled(cron = "0 0 2 * * *")
+    @Scheduled(fixedDelay = 10000)
     public void syncChangesFromAlfresco() {
         System.out.println("[INFO] Starting scheduled Alfresco to Elasticsearch sync at " + Instant.now());
+        alfrescoSyncService.syncChangesFromAlfresco();        
 
         try {
+            
+
             // 1. Haal gewijzigde documenten op uit Alfresco (bijv. via Alfresco Search/Query API)
             // List<EnterpriseSearchDocument> changedDocs = alfrescoClient.getRecentlyModifiedDocuments();
 
@@ -34,7 +37,7 @@ public class AlfrescoSyncScheduler {
             }
             */
 
-            System.out.println("[SUCCESS] Scheduled synchronization completed successfully.");
+           System.out.println("[SUCCESS] Scheduled synchronization completed successfully.");
         } catch (Exception e) {
             System.err.println("[ERROR] Failed during scheduled Alfresco sync: " + e.getMessage());
         }

@@ -1,4 +1,5 @@
-contain\opensource\enterprisesearch\services\indexingservice.class
+contain\opensource\enterprisesearch\Main.class
+contain\opensource\enterprisesearch\services\IndexingService.class
 contain\opensource\enterprisesearch\controllers\SyncController.class
 contain\opensource\enterprisesearch\model\EnterpriseSearchDocument.class
 contain\opensource\enterprisesearch\SearchApplication.class
