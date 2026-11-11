@@ -1,7 +1,10 @@
+d:\contAIn\elassticenterprisesearch\src\main\java\contain\opensource\enterprisesearch\services\SearchService.java
 d:\contAIn\elassticenterprisesearch\src\main\java\contain\opensource\enterprisesearch\services\AlfrescoSyncService.java
 d:\contAIn\elassticenterprisesearch\src\main\java\contain\opensource\enterprisesearch\model\EnterpriseSearchDocument.java
+d:\contAIn\elassticenterprisesearch\src\main\java\contain\opensource\enterprisesearch\controllers\SearchController.java
 d:\contAIn\elassticenterprisesearch\src\main\java\contain\opensource\enterprisesearch\services\IndexingService.java
 d:\contAIn\elassticenterprisesearch\src\main\java\contain\opensource\enterprisesearch\SearchApplication.java
+d:\contAIn\elassticenterprisesearch\src\main\java\contain\opensource\enterprisesearch\controllers\ContentController.java
 d:\contAIn\elassticenterprisesearch\src\main\java\contain\opensource\enterprisesearch\controllers\SyncController.java
 d:\contAIn\elassticenterprisesearch\src\main\java\contain\opensource\enterprisesearch\services\AlfrescoSyncScheduler.java
 d:\contAIn\elassticenterprisesearch\src\main\java\contain\opensource\enterprisesearch\Main.java

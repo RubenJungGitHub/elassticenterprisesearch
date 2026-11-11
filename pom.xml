@@ -60,6 +60,13 @@
             <version>3.3.0</version>
         </dependency>
 
+        <!-- Thymeleaf (versie gelijkgetrokken met spring-boot.version) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
@@ -81,6 +88,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <mainClass>contain.opensource.enterprisesearch.SearchApplication</mainClass>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -94,13 +104,6 @@
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>contain.opensource.enterprisesearch.SearchApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

@@ -160,7 +160,9 @@ public class AlfrescoSyncService {
                 } else {
                     // Haal de permissies op via de hulpfunctie
                     List<String> allowedAuthorities = fetchNodePermissions(id);
-
+                    String contentUrl = "https://alfresco-proxy-route-contain-dvl.apps.ocp0.anders-nogic.atos.net/alfresco/api/-default-/public/alfresco/versions/1/nodes/" + id + "/content";
+                    String proxyUrl = "/api/files/" + id + "/content";
+    
                     EnterpriseSearchDocument doc = new EnterpriseSearchDocument();
                     doc.setId(id);
                     doc.setTitle(name);
@@ -168,6 +170,7 @@ public class AlfrescoSyncService {
                     doc.setCreatedDate((String) entryData.get("createdAt"));
                     doc.setContent("Alfresco document from crawl: " + name);
                     doc.setSourceSystem("Alfresco");
+                    doc.setUrl(proxyUrl);
                     doc.setAccessControl(allowedAuthorities); // Gekoppeld aan jouw accessControl veld!
 
                     allDocuments.add(doc);

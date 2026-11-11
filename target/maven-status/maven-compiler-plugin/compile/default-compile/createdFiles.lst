@@ -1,7 +1,10 @@
 contain\opensource\enterprisesearch\Main.class
 contain\opensource\enterprisesearch\services\IndexingService.class
+contain\opensource\enterprisesearch\services\SearchService.class
+contain\opensource\enterprisesearch\controllers\SearchController.class
 contain\opensource\enterprisesearch\controllers\SyncController.class
 contain\opensource\enterprisesearch\model\EnterpriseSearchDocument.class
+contain\opensource\enterprisesearch\controllers\ContentController.class
 contain\opensource\enterprisesearch\SearchApplication.class
 contain\opensource\enterprisesearch\services\AlfrescoSyncScheduler.class
 contain\opensource\enterprisesearch\services\AlfrescoSyncService.class
