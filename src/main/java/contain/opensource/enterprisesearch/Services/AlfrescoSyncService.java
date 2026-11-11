@@ -158,6 +158,9 @@ public class AlfrescoSyncService {
                 if (Boolean.TRUE.equals(isFolder)) {
                     crawlNodeRecursive(id, allDocuments);
                 } else {
+                    // Haal de permissies op via de hulpfunctie
+                    List<String> allowedAuthorities = fetchNodePermissions(id);
+
                     EnterpriseSearchDocument doc = new EnterpriseSearchDocument();
                     doc.setId(id);
                     doc.setTitle(name);
@@ -165,6 +168,7 @@ public class AlfrescoSyncService {
                     doc.setCreatedDate((String) entryData.get("createdAt"));
                     doc.setContent("Alfresco document from crawl: " + name);
                     doc.setSourceSystem("Alfresco");
+                    doc.setAccessControl(allowedAuthorities); // Gekoppeld aan jouw accessControl veld!
 
                     allDocuments.add(doc);
                 }
@@ -172,5 +176,40 @@ public class AlfrescoSyncService {
         } catch (Exception e) {
             System.err.println("[ERROR] Failed to crawl node children for ID " + nodeId + ": " + e.getMessage());
         }
+    }
+
+    // Hulpfunctie om permissies op te halen uit Alfresco
+    private List<String> fetchNodePermissions(String nodeId) {
+        List<String> authorities = new ArrayList<>();
+        try {
+            Map permissionsResponse = alfrescoRestClient.get()
+                    .uri("/nodes/{nodeId}/permissions", nodeId)
+                    .retrieve()
+                    .body(Map.class);
+
+            if (permissionsResponse != null && permissionsResponse.containsKey("entry")) {
+                Map entryMap = (Map) permissionsResponse.get("entry");
+                List locallySet = (List) entryMap.get("locallySet");
+
+                if (locallySet != null) {
+                    for (Object rawPerm : locallySet) {
+                        Map permMap = (Map) rawPerm;
+                        String authorityId = (String) permMap.get("authorityId");
+                        if (authorityId != null) {
+                            authorities.add(authorityId);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Fallback als het ophalen van permissies faalt
+            authorities.add("GROUP_EVERYONE");
+        }
+        
+        if (authorities.isEmpty()) {
+            authorities.add("GROUP_EVERYONE");
+        }
+
+        return authorities;
     }
 }
