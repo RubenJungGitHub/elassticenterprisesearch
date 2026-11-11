@@ -8,11 +8,11 @@ import co.elastic.clients.elasticsearch.core.IndexResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class indexingservice
+public class IndexingService
     {
     private final ElasticsearchClient esClient;
 
-    public indexingservice(ElasticsearchClient esClient) {
+    public IndexingService(ElasticsearchClient esClient) {
         this.esClient = esClient;
     }
 

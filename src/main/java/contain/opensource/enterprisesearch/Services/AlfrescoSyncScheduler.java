@@ -10,14 +10,14 @@ import java.util.List;
 @Component
 public class AlfrescoSyncScheduler {
 
-    private final indexingservice indexingService;
+    private final IndexingService indexingService;
 
-    public AlfrescoSyncScheduler(indexingservice indexingService) {
+    public AlfrescoSyncScheduler(IndexingService indexingService) {
         this.indexingService = indexingService;
     }
 
     // Optie A: Draait elke 10 minuten (600.000 milliseconden) nadat de vorige run is voltooid
-    @Scheduled(fixedDelay = 600000)
+    @Scheduled(fixedDelay = 10)
     // Optie B (Alternatief): Elke nacht om 02:00 uur via een cron-expressie
     // @Scheduled(cron = "0 0 2 * * *")
     public void syncChangesFromAlfresco() {
