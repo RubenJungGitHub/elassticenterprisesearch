@@ -23,11 +23,12 @@ public class AlfrescoSyncService {
             IndexingService indexingService,
             @Value("${alfresco.api.username:admin}") String alfrescoUser,
             @Value("${alfresco.api.password:admin}") String alfrescoPassword) {
-        
+
         this.indexingService = indexingService;
-        
+
         this.alfrescoRestClient = RestClient.builder()
-                .baseUrl("https://alfresco-proxy-route-contain-dvl.apps.ocp0.anders-nogic.atos.net/alfresco/api/-default-/public/alfresco/versions/1")
+                .baseUrl(
+                        "https://alfresco-proxy-route-contain-dvl.apps.ocp0.anders-nogic.atos.net/alfresco/api/-default-/public/alfresco/versions/1")
                 .defaultHeaders(headers -> headers.setBasicAuth(alfrescoUser, alfrescoPassword))
                 .build();
     }
@@ -131,8 +132,9 @@ public class AlfrescoSyncService {
 
     private void crawlNodeRecursive(String nodeId, List<EnterpriseSearchDocument> allDocuments) {
         try {
+            // Vraag nadrukkelijk om de properties via de include-parameter!
             Map childrenResponse = alfrescoRestClient.get()
-                    .uri("/nodes/{nodeId}/children", nodeId)
+                    .uri("/nodes/{nodeId}/children?include=properties", nodeId)
                     .retrieve()
                     .body(Map.class);
 
@@ -158,20 +160,37 @@ public class AlfrescoSyncService {
                 if (Boolean.TRUE.equals(isFolder)) {
                     crawlNodeRecursive(id, allDocuments);
                 } else {
-                    // Haal de permissies op via de hulpfunctie
                     List<String> allowedAuthorities = fetchNodePermissions(id);
-                    String contentUrl = "https://alfresco-proxy-route-contain-dvl.apps.ocp0.anders-nogic.atos.net/alfresco/api/-default-/public/alfresco/versions/1/nodes/" + id + "/content";
                     String proxyUrl = "/api/files/" + id + "/content";
-    
+
+                    // Nu komt 'properties' wél mee uit Alfresco!
+                    Map<String, Object> properties = (Map<String, Object>) entryData.get("properties");
+                    String classification = null;
+                    if (properties != null) {
+                        // Exacte sleutel zoals deze uit Alfresco terugkomt
+                        classification = (String) properties.get("contain:EXTTAXCLASSIFICATIONVAL");
+
+                        // Fallbacks voor de zekerheid
+                        if (classification == null) {
+                            classification = (String) properties.get("ils:classification");
+                        }
+                        if (classification == null) {
+                            classification = (String) properties.get("classification");
+                        }
+                    }
+                    if (classification == null) {
+                        classification = (String) entryData.get("classification");
+                    }
                     EnterpriseSearchDocument doc = new EnterpriseSearchDocument();
                     doc.setId(id);
                     doc.setTitle(name);
                     doc.setFileType(nodeType);
                     doc.setCreatedDate((String) entryData.get("createdAt"));
+                    doc.setClassification(classification); // Vult nu correct de classificatie
                     doc.setContent("Alfresco document from crawl: " + name);
                     doc.setSourceSystem("Alfresco");
                     doc.setUrl(proxyUrl);
-                    doc.setAccessControl(allowedAuthorities); // Gekoppeld aan jouw accessControl veld!
+                    doc.setAccessControl(allowedAuthorities);
 
                     allDocuments.add(doc);
                 }
@@ -208,7 +227,7 @@ public class AlfrescoSyncService {
             // Fallback als het ophalen van permissies faalt
             authorities.add("GROUP_EVERYONE");
         }
-        
+
         if (authorities.isEmpty()) {
             authorities.add("GROUP_EVERYONE");
         }

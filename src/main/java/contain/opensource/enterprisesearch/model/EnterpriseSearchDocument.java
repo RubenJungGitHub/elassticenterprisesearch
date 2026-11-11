@@ -8,6 +8,7 @@ public class EnterpriseSearchDocument {
     private String id;
     private String title;
     private String content;
+    private String classification; // <-- Toegevoegd
 
     @JsonProperty("source_system")
     private String sourceSystem = "Alfresco";
@@ -26,10 +27,11 @@ public class EnterpriseSearchDocument {
     // Constructors
     public EnterpriseSearchDocument() {}
 
-    public EnterpriseSearchDocument(String id, String title, String content, String fileType, String url, String createdDate, List<String> accessControl) {
+    public EnterpriseSearchDocument(String id, String title, String content, String classification, String fileType, String url, String createdDate, List<String> accessControl) {
         this.id = id;
         this.title = title;
         this.content = content;
+        this.classification = classification; // <-- Toegevoegd
         this.sourceSystem = "Alfresco";
         this.fileType = fileType;
         this.url = url;
@@ -46,6 +48,9 @@ public class EnterpriseSearchDocument {
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
+
+    public String getClassification() { return classification; } // <-- Toegevoegd
+    public void setClassification(String classification) { this.classification = classification; } // <-- Toegevoegd
 
     public String getSourceSystem() { return sourceSystem; }
     public void setSourceSystem(String sourceSystem) { this.sourceSystem = sourceSystem; }

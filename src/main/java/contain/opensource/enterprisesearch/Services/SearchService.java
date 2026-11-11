@@ -1,4 +1,3 @@
-
 package contain.opensource.enterprisesearch.services;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
@@ -22,29 +21,35 @@ public class SearchService {
     public List<EnterpriseSearchDocument> searchDocuments(String query) {
         List<EnterpriseSearchDocument> results = new ArrayList<>();
         try {
-            // Als de query leeg is, tonen we standaard alles (of een lege lijst, naar
-            // keuze)
             SearchResponse<EnterpriseSearchDocument> response;
 
             if (query == null || query.trim().isEmpty()) {
                 response = esClient.search(s -> s
                         .index("enterprise-search-index")
-                        .query(q -> q.matchAll(m -> m)), // <--- Aangepast: m -> m meegegeven
+                        .query(q -> q.matchAll(m -> m)),
                         EnterpriseSearchDocument.class);
             } else {
-                // Zoek op zowel titel als content
+                // Gebruik een bool-query om zowel normale multi_match als partial title wildcards te ondersteunen
+                String wildcardQuery = "*" + query.toLowerCase() + "*";
+                
                 response = esClient.search(s -> s
                         .index("enterprise-search-index")
-                        .query(q -> q.multiMatch(m -> m
-                                .fields("title", "content")
-                                .query(query))),
+                        .query(q -> q.bool(b -> b
+                                .should(sh -> sh.multiMatch(m -> m
+                                        .fields("title", "content", "classification")
+                                        .query(query)
+                                ))
+                                .should(sh -> sh.wildcard(w -> w
+                                        .field("title")
+                                        .value(wildcardQuery)
+                                ))
+                        )),
                         EnterpriseSearchDocument.class);
             }
 
             for (Hit<EnterpriseSearchDocument> hit : response.hits().hits()) {
                 EnterpriseSearchDocument doc = hit.source();
                 if (doc != null) {
-                    // Zet eventueel het Elasticsearch ID als fallback als ID leeg is
                     if (doc.getId() == null) {
                         doc.setId(hit.id());
                     }

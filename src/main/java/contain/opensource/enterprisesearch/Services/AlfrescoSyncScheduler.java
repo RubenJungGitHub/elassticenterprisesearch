@@ -32,7 +32,7 @@ public class AlfrescoSyncScheduler {
 
     // Optie B (Alternatief): Elke nacht om 02:00 uur via een cron-expressie
     // @Scheduled(cron = "0 0 2 * * *")
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 10000)
     public void syncChangesFromAlfresco() {
         // Printen met groene achtergrond
         System.out.println(ANSI_GREEN_BG + ANSI_BLACK + Instant.now() + " [INFO] Starting scheduled Alfresco to Elasticsearch sync" + ANSI_RESET);
