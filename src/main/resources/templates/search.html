@@ -16,6 +16,9 @@
         .result-item:last-child { border-bottom: none; }
         .result-title { font-size: 18px; font-weight: bold; color: #004080; text-decoration: none; }
         .result-title:hover { text-decoration: underline; }
+        .result-actions { font-size: 13px; margin-top: 6px; }
+        .result-actions a { color: #0066cc; text-decoration: none; }
+        .result-actions a:hover { text-decoration: underline; }
         .result-meta { font-size: 12px; color: #777; margin-top: 5px; }
         .result-snippet { margin-top: 8px; font-size: 14px; color: #444; }
         .no-results { color: #888; font-style: italic; }
@@ -28,7 +31,7 @@
     
     <!-- Zoekformulier -->
     <form action="/" method="get" class="search-box">
-        <input type="text" name="q" th:value="${query}" placeholder="Typ je zoekterm (bijv. internal, TOPSECRET)..." autofocus>
+        <input type="text" name="q" th:value="${query}" placeholder="Typ je zoekterm (bijv. internal, TOPSECRET, Unclassified)..." autofocus>
         <button type="submit">Zoeken</button>
     </form>
 
@@ -44,14 +47,21 @@
         </div>
         
         <div class="result-item" th:each="doc : ${results}">
-            <!-- Titel met link naar de pointer (of Alfresco/bron) -->
+            <!-- Titel met direct download/inhoud link -->
             <a class="result-title" th:href="${doc.url != null ? doc.url : '#'}" th:text="${doc.title}" target="_blank">Document Titel</a>
             
             <div class="result-snippet" th:text="${doc.content}">Inhoud snippet...</div>
             
+            <!-- Link naar de exacte maplocatie in Alfresco -->
+            <div class="result-actions" th:if="${doc.folderUrl != null}">
+                📁 <a th:href="${doc.folderUrl}" target="_blank">Open in Alfresco mappenstructuur</a>
+            </div>
+            
+            <!-- Metadata overzicht -->
             <div class="result-meta">
                 Bron: <span th:text="${doc.sourceSystem}">Alfresco</span> | 
-                Type: <span th:text="${doc.fileType}"> file</span> | 
+                Type: <span th:text="${doc.fileType}">file</span> | 
+                Classificatie: <span th:text="${doc.classification}">Unclassified</span> | 
                 ID: <span th:text="${doc.id}">id</span>
             </div>
         </div>

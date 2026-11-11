@@ -110,7 +110,8 @@ public class AlfrescoSyncService {
                                 String containerId = (String) containerData.get("id");
 
                                 if (containerId != null) {
-                                    crawlNodeRecursive(containerId, allDocuments);
+                                    // Start de recursieve crawl met een leeg pad (root van de container)
+                                    crawlNodeRecursive(containerId, siteId, "", allDocuments);
                                 }
                             }
                         }
@@ -130,9 +131,8 @@ public class AlfrescoSyncService {
         return Collections.emptyList();
     }
 
-    private void crawlNodeRecursive(String nodeId, List<EnterpriseSearchDocument> allDocuments) {
+    private void crawlNodeRecursive(String nodeId, String siteId, String currentPath, List<EnterpriseSearchDocument> allDocuments) {
         try {
-            // Vraag nadrukkelijk om de properties via de include-parameter!
             Map childrenResponse = alfrescoRestClient.get()
                     .uri("/nodes/{nodeId}/children?include=properties", nodeId)
                     .retrieve()
@@ -158,19 +158,21 @@ public class AlfrescoSyncService {
                 String nodeType = (String) entryData.get("nodeType");
 
                 if (Boolean.TRUE.equals(isFolder)) {
-                    crawlNodeRecursive(id, allDocuments);
+                    // Bouw het map-pad verder uit (bijv. /Unclassified of /MapA/MapB)
+                    String subPath = currentPath.isEmpty() ? "/" + name : currentPath + "/" + name;
+                    crawlNodeRecursive(id, siteId, subPath, allDocuments);
                 } else {
                     List<String> allowedAuthorities = fetchNodePermissions(id);
                     String proxyUrl = "/api/files/" + id + "/content";
+                    
+                    // Bouw de Share URL op die eindigt in de exacte submap waar het bestand staat
+                    // Hiermee opent Alfresco Share direct de juiste folder via de path filter hash
+                    String folderUrl = "https://alfresco-proxy-route-contain-dvl.apps.ocp0.anders-nogic.atos.net/share/page/site/" + siteId + "/documentlibrary#filter=path|" + currentPath;
 
-                    // Nu komt 'properties' wél mee uit Alfresco!
                     Map<String, Object> properties = (Map<String, Object>) entryData.get("properties");
                     String classification = null;
                     if (properties != null) {
-                        // Exacte sleutel zoals deze uit Alfresco terugkomt
                         classification = (String) properties.get("contain:EXTTAXCLASSIFICATIONVAL");
-
-                        // Fallbacks voor de zekerheid
                         if (classification == null) {
                             classification = (String) properties.get("ils:classification");
                         }
@@ -181,15 +183,17 @@ public class AlfrescoSyncService {
                     if (classification == null) {
                         classification = (String) entryData.get("classification");
                     }
+
                     EnterpriseSearchDocument doc = new EnterpriseSearchDocument();
                     doc.setId(id);
                     doc.setTitle(name);
                     doc.setFileType(nodeType);
                     doc.setCreatedDate((String) entryData.get("createdAt"));
-                    doc.setClassification(classification); // Vult nu correct de classificatie
+                    doc.setClassification(classification);
                     doc.setContent("Alfresco document from crawl: " + name);
                     doc.setSourceSystem("Alfresco");
                     doc.setUrl(proxyUrl);
+                    doc.setFolderUrl(folderUrl); // Bevat nu het exacte pad (bijv. #filter=path|/Unclassified)
                     doc.setAccessControl(allowedAuthorities);
 
                     allDocuments.add(doc);
@@ -200,7 +204,6 @@ public class AlfrescoSyncService {
         }
     }
 
-    // Hulpfunctie om permissies op te halen uit Alfresco
     private List<String> fetchNodePermissions(String nodeId) {
         List<String> authorities = new ArrayList<>();
         try {
@@ -224,7 +227,6 @@ public class AlfrescoSyncService {
                 }
             }
         } catch (Exception e) {
-            // Fallback als het ophalen van permissies faalt
             authorities.add("GROUP_EVERYONE");
         }
 

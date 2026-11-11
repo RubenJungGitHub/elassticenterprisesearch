@@ -5,6 +5,10 @@ import java.util.List;
 
 public class EnterpriseSearchDocument {
 
+    // Getters en setters toevoegen...
+    private String folderUrl;
+    private String folderName;
+
     private String id;
     private String title;
     private String content;
@@ -25,9 +29,11 @@ public class EnterpriseSearchDocument {
     private List<String> accessControl;
 
     // Constructors
-    public EnterpriseSearchDocument() {}
+    public EnterpriseSearchDocument() {
+    }
 
-    public EnterpriseSearchDocument(String id, String title, String content, String classification, String fileType, String url, String createdDate, List<String> accessControl) {
+    public EnterpriseSearchDocument(String id, String title, String content, String classification, String fileType,
+            String url, String createdDate, List<String> accessControl) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -40,30 +46,91 @@ public class EnterpriseSearchDocument {
     }
 
     // Getters en Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() {
+        return id;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public String getTitle() {
+        return title;
+    }
 
-    public String getClassification() { return classification; } // <-- Toegevoegd
-    public void setClassification(String classification) { this.classification = classification; } // <-- Toegevoegd
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public String getSourceSystem() { return sourceSystem; }
-    public void setSourceSystem(String sourceSystem) { this.sourceSystem = sourceSystem; }
+    public String getContent() {
+        return content;
+    }
 
-    public String getFileType() { return fileType; }
-    public void setFileType(String fileType) { this.fileType = fileType; }
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
+    public String getClassification() {
+        return classification;
+    } // <-- Toegevoegd
 
-    public String getCreatedDate() { return createdDate; }
-    public void setCreatedDate(String createdDate) { this.createdDate = createdDate; }
+    public void setClassification(String classification) {
+        this.classification = classification;
+    } // <-- Toegevoegd
 
-    public List<String> getAccessControl() { return accessControl; }
-    public void setAccessControl(List<String> accessControl) { this.accessControl = accessControl; }
+    public String getSourceSystem() {
+        return sourceSystem;
+    }
+
+    public void setSourceSystem(String sourceSystem) {
+        this.sourceSystem = sourceSystem;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getFolderUrl() {
+        return folderUrl;
+    }
+
+    public void setFolderUrl(String folderUrl) {
+        this.folderUrl = folderUrl;
+    }
+
+    public String getFolderName() {
+        return folderName;
+    }
+
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
+    }
+
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public List<String> getAccessControl() {
+        return accessControl;
+    }
+
+    public void setAccessControl(List<String> accessControl) {
+        this.accessControl = accessControl;
+    }
 }
