@@ -35,7 +35,7 @@ public class AlfrescoSyncService {
 
     public void syncChangesFromAlfresco() {
    System.out.println(
-            GREEN_BG + Instant.now() + " [INFO] Starting scheduled SHAREPOINT to Elasticsearch sync" + RESET);
+            GREEN_BG + Instant.now() + " [INFO] Starting scheduled ALFRESCO to Elasticsearch sync" + RESET);
 
 
 
