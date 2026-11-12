@@ -1,84 +1,90 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>contAIn Enterprise Search Portal</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 40px; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { color: #004080; margin-top: 0; }
-        .search-box { display: flex; gap: 10px; margin-bottom: 30px; }
-        input[type="text"] { flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 12px 24px; background-color: #004080; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+<style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #004080; margin-top: 0; font-size: 22px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input[type="text"] { flex: 1; padding: 8px 12px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 8px 16px; background-color: #004080; color: white; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; }
         button:hover { background-color: #00264d; }
-        .results-count { font-size: 14px; color: #666; margin-bottom: 20px; }
+        .results-count { font-size: 13px; color: #666; margin-bottom: 15px; }
         
-        /* Standaard resultaat item */
-        .result-item { padding: 15px; border-bottom: 1px solid #eee; margin-bottom: 15px; border-radius: 6px; }
+        .result-item { padding: 8px 12px; border-bottom: 1px solid #eee; margin-bottom: 8px; border-radius: 4px; }
         .result-item:last-child { border-bottom: none; }
         
-        /* Subtiel afwijkende achtergrondkleuren per platform */
-        .result-item.alfresco { background-color: #fafbfc; border-left: 4px solid #004080; }
-        .result-item.sharepoint { background-color: #f3f9fc; border-left: 4px solid #0078d4; }
+        /* Aangepast: Alfresco krijgt nu een duidelijke lichtgrijze achtergrond */
+        .result-item.alfresco { background-color: #eceff1; border-left: 3px solid #004080; }
+        .result-item.sharepoint { background-color: #f3f9fc; border-left: 3px solid #0078d4; }
 
-        .result-title { font-size: 18px; font-weight: bold; color: #004080; text-decoration: none; }
+        .result-title { font-size: 13px; font-weight: bold; color: #004080; text-decoration: none; }
         .result-title:hover { text-decoration: underline; }
-        .result-actions { font-size: 13px; margin-top: 6px; }
+        .result-snippet { margin-top: 2px; font-size: 12px; color: #444; }
+        .result-actions { font-size: 11px; margin-top: 2px; }
         .result-actions a { color: #0066cc; text-decoration: none; }
         .result-actions a:hover { text-decoration: underline; }
-        .result-meta { font-size: 12px; color: #777; margin-top: 5px; }
-        .result-snippet { margin-top: 8px; font-size: 14px; color: #444; }
-        .no-results { color: #888; font-style: italic; }
+        .result-meta { font-size: 10px; color: #777; margin-top: 2px; }
+        
+        .no-results { color: #888; font-style: italic; font-size: 13px; }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>contAIn Enterprise Search</h1>
-    
-    <!-- Zoekformulier -->
-    <form action="/" method="get" class="search-box">
-        <input type="text" name="q" th:value="${query}" placeholder="Typ je zoekterm (bijv. internal, TOPSECRET, Unclassified)..." autofocus>
-        <button type="submit">Zoeken</button>
-    </form>
+    <div class="container">
+        <h1>contAIn Enterprise Search</h1>
 
-    <!-- Resultaten teller -->
-    <div class="results-count" th:if="${results != null}">
-        Aantal gevonden documenten: <strong th:text="${results.size()}">0</strong>
-    </div>
+        <!-- Zoekformulier -->
+        <form action="/" method="get" class="search-box">
+            <input type="text" name="q" th:value="${query}"
+                placeholder="Typ je zoekterm (bijv. internal, TOPSECRET, Unclassified)..." autofocus>
+            <button type="submit">Zoeken</button>
+        </form>
 
-    <!-- Resultaten lijst -->
-    <div class="results-list">
-        <div th:if="${results.empty}" class="no-results">
-            Geen documenten gevonden die voldoen aan je zoekopdracht.
+        <!-- Resultaten teller -->
+        <div class="results-count" th:if="${results != null}">
+            Aantal gevonden documenten: <strong th:text="${results.size()}">0</strong>
         </div>
-        
-        <!-- Dynamische klasse toevoegen op basis van sourceSystem (kleine letters gemaakt voor de zekerheid) -->
-        <div class="result-item" 
-             th:each="doc : ${results}"
-             th:classappend="${doc.sourceSystem != null ? #strings.toLowerCase(doc.sourceSystem) : 'alfresco'}">
-             
-            <!-- Titel met direct download/inhoud link -->
-            <a class="result-title" th:href="${doc.url != null ? doc.url : '#'}" th:text="${doc.title}" target="_blank">Document Titel</a>
-            
-            <div class="result-snippet" th:text="${doc.content}">Inhoud snippet...</div>
-            
-            <!-- Dynamische mappenlink afhankelijk van het platform -->
-            <div class="result-actions" th:if="${doc.folderUrl != null}">
-                <span th:if="${doc.sourceSystem == 'SharePoint'}">📂 <a th:href="${doc.folderUrl}" target="_blank">Open in SharePoint map</a></span>
-                <span th:unless="${doc.sourceSystem == 'SharePoint'}">📁 <a th:href="${doc.folderUrl}" target="_blank">Open in Alfresco mappenstructuur</a></span>
+
+        <!-- Resultaten lijst -->
+        <div class="results-list">
+            <div th:if="${results.empty}" class="no-results">
+                Geen documenten gevonden die voldoen aan je zoekopdracht.
             </div>
-            
-            <!-- Metadata overzicht -->
-            <div class="result-meta">
-                Bron: <span th:text="${doc.sourceSystem}">Alfresco</span> | 
-                Type: <span th:text="${doc.fileType}">file</span> | 
-                Classificatie: <span th:text="${doc.classification}">Unclassified</span> | 
-                ID: <span th:text="${doc.id}">id</span>
+
+            <!-- Dynamische klasse toevoegen op basis van sourceSystem (kleine letters gemaakt voor de zekerheid) -->
+            <div class="result-item" th:each="doc : ${results}"
+                th:classappend="${doc.sourceSystem != null ? #strings.toLowerCase(doc.sourceSystem) : 'alfresco'}">
+
+                <!-- Titel met direct download/inhoud link -->
+                <a class="result-title" th:href="${doc.url != null ? doc.url : '#'}" th:text="${doc.title}"
+                    target="_blank">Document Titel</a>
+
+                <div class="result-snippet" th:text="${doc.content}">Inhoud snippet...</div>
+
+                <!-- Dynamische mappenlink afhankelijk van het platform -->
+                <div class="result-actions" th:if="${doc.folderUrl != null}">
+                    <span th:if="${doc.sourceSystem == 'SharePoint'}">📂 <a th:href="${doc.folderUrl}"
+                            target="_blank">Open in SharePoint map</a></span>
+                    <span th:unless="${doc.sourceSystem == 'SharePoint'}">📁 <a th:href="${doc.folderUrl}"
+                            target="_blank">Open in Alfresco mappenstructuur</a></span>
+                </div>
+
+                <!-- Metadata overzicht -->
+                <div class="result-meta">
+                    Bron: <span th:text="${doc.sourceSystem}">Alfresco</span> |
+                    Type: <span th:text="${doc.fileType}">file</span> |
+                    Classificatie: <span th:text="${doc.classification}">Unclassified</span> |
+                    ID: <span th:text="${doc.id}">id</span>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 </body>
+
 </html>

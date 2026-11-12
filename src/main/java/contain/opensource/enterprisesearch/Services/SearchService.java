@@ -31,21 +31,27 @@ public class SearchService {
                         .query(q -> q.matchAll(m -> m)),
                         EnterpriseSearchDocument.class);
             } else {
+                // Splits de query op spaties als je wilt dat elk woord afzonderlijk verplicht
+                // is
+                String[] queryTerms = query.trim().split("\\s+");
                 String wildcardQuery = "*" + query.toLowerCase() + "*";
-                
+
                 response = esClient.search(s -> s
                         .index("enterprise-search-index")
-                        .size(100) // Zorg dat de limiet op 100 staat
-                        .query(q -> q.bool(b -> b
-                                .should(sh -> sh.multiMatch(m -> m
+                        .size(100)
+                        .query(q -> q.bool(b -> {
+                            // Voor elk los woord in het zoekveld eisen we dat het erin voorkomt
+                            for (String term : queryTerms) {
+                                b.must(m -> m.multiMatch(mm -> mm
                                         .fields("title", "content", "classification")
-                                        .query(query)
-                                ))
-                                .should(sh -> sh.wildcard(w -> w
-                                        .field("title")
-                                        .value(wildcardQuery)
-                                ))
-                        )),
+                                        .query(term)));
+                            }
+                            // Of als je de hele string als wildcard op de titel wilt behouden:
+                            b.should(sh -> sh.wildcard(w -> w
+                                    .field("title")
+                                    .value(wildcardQuery)));
+                            return b;
+                        })),
                         EnterpriseSearchDocument.class);
             }
 
@@ -61,8 +67,7 @@ public class SearchService {
 
             // Alfabetisch sorteren op filenaam (title) (hoofdletterongevoelig)
             results.sort(Comparator.comparing(
-                doc -> doc.getTitle() != null ? doc.getTitle().toLowerCase() : ""
-            ));
+                    doc -> doc.getTitle() != null ? doc.getTitle().toLowerCase() : ""));
 
         } catch (Exception e) {
             System.err.println("[ERROR] Failed to execute search query: " + e.getMessage());

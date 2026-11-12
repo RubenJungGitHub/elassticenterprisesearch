@@ -121,7 +121,7 @@ public class SharePointSyncService {
     }
 
     // Niet langer static, zodat hij gebruik kan maken van de ingelezen properties
-public String getGraphToken() throws Exception {
+    public String getGraphToken() throws Exception {
         Set<String> scopes = Collections.singleton(graphBaseUrl + "/.default");
         SilentParameters silentParameters = SilentParameters.builder(scopes).build();
 
@@ -191,8 +191,18 @@ public String getGraphToken() throws Exception {
     private void crawlDriveItems(RestClient graphRestClient, String driveId, String pathSegment,
             String currentPath, String siteWebUrl, List<EnterpriseSearchDocument> allDocuments) {
         try {
+            // 1. Bepaal het juiste requestpad inclusief de expand parameter voor kolommen
+            String requestPath;
+            if (pathSegment.equals("/root/children")) {
+                requestPath = "/v1.0/drives/" + driveId + "/root/children?$expand=listItem($expand=fields)";
+            } else if (pathSegment.startsWith("/items/")) {
+                requestPath = "/v1.0/drives/" + driveId + pathSegment + "?$expand=listItem($expand=fields)";
+            } else {
+                requestPath = "/v1.0/drives/" + driveId + pathSegment + "?$expand=listItem($expand=fields)";
+            }
+
             DriveItemsResponse itemsResponse = graphRestClient.get()
-                    .uri("/v1.0/drives/{driveId}{pathSegment}", driveId, pathSegment)
+                    .uri(requestPath)
                     .retrieve()
                     .body(DriveItemsResponse.class);
 
@@ -201,13 +211,23 @@ public String getGraphToken() throws Exception {
             }
 
             for (DriveItem item : itemsResponse.getValue()) {
+                String classification = "Public"; // Fallback waarde
+                if (item.getListItem() != null && item.getListItem().getFields() != null) {
+                    Map<String, Object> fields = item.getListItem().getFields().getAdditionalData();
+                    if (fields != null && fields.containsKey("classificationexternaltax")) {
+                        Object val = fields.get("classificationexternaltax");
+                        if (val != null) {
+                            classification = val.toString();
+                        }
+                    }
+                }
                 if (item.getFile() != null) {
                     EnterpriseSearchDocument doc = new EnterpriseSearchDocument();
                     doc.setId(item.getId());
                     doc.setTitle(item.getName());
                     doc.setFileType("file");
                     doc.setCreatedDate(item.getCreatedDateTime());
-                    doc.setClassification("Public");
+                    doc.setClassification(classification); // <-- Toegevoegd
                     doc.setContent("SharePoint document from crawl: " + item.getName());
                     doc.setSourceSystem("SharePoint");
                     doc.setUrl(item.getWebUrl());
