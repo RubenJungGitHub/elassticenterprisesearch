@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import static contain.opensource.enterprisesearch.util.AnsiColor.*;
 @Service
 public class AlfrescoSyncService {
 
@@ -34,7 +34,10 @@ public class AlfrescoSyncService {
     }
 
     public void syncChangesFromAlfresco() {
-        System.out.println("[INFO] Starting scheduled Alfresco to Elasticsearch sync at " + Instant.now());
+   System.out.println(
+            GREEN_BG + Instant.now() + " [INFO] Starting scheduled SHAREPOINT to Elasticsearch sync" + RESET);
+
+
 
         try {
             List<EnterpriseSearchDocument> activeDocs = fetchRecentlyModifiedDocumentsFromAlfresco();
