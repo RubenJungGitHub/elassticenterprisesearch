@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator; // Vergeet niet deze import toe te voegen bovenaan
 
 @Service
 public class SearchService {
@@ -26,7 +27,7 @@ public class SearchService {
             if (query == null || query.trim().isEmpty()) {
                 response = esClient.search(s -> s
                         .index("enterprise-search-index")
-                        .size(100) // <-- VOEG DIT TOE (voor lege zoekopdracht / matchAll)
+                        .size(100) // Zorg dat de limiet op 100 staat
                         .query(q -> q.matchAll(m -> m)),
                         EnterpriseSearchDocument.class);
             } else {
@@ -34,7 +35,7 @@ public class SearchService {
                 
                 response = esClient.search(s -> s
                         .index("enterprise-search-index")
-                        .size(100) // <-- EN VOEG DIT OOK TOE (voor gerichte zoekopdrachten)
+                        .size(100) // Zorg dat de limiet op 100 staat
                         .query(q -> q.bool(b -> b
                                 .should(sh -> sh.multiMatch(m -> m
                                         .fields("title", "content", "classification")
@@ -57,6 +58,12 @@ public class SearchService {
                     results.add(doc);
                 }
             }
+
+            // Alfabetisch sorteren op filenaam (title) (hoofdletterongevoelig)
+            results.sort(Comparator.comparing(
+                doc -> doc.getTitle() != null ? doc.getTitle().toLowerCase() : ""
+            ));
+
         } catch (Exception e) {
             System.err.println("[ERROR] Failed to execute search query: " + e.getMessage());
         }
