@@ -12,8 +12,15 @@
         button { padding: 12px 24px; background-color: #004080; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
         button:hover { background-color: #00264d; }
         .results-count { font-size: 14px; color: #666; margin-bottom: 20px; }
-        .result-item { padding: 15px; border-bottom: 1px solid #eee; margin-bottom: 15px; }
+        
+        /* Standaard resultaat item */
+        .result-item { padding: 15px; border-bottom: 1px solid #eee; margin-bottom: 15px; border-radius: 6px; }
         .result-item:last-child { border-bottom: none; }
+        
+        /* Subtiel afwijkende achtergrondkleuren per platform */
+        .result-item.alfresco { background-color: #fafbfc; border-left: 4px solid #004080; }
+        .result-item.sharepoint { background-color: #f3f9fc; border-left: 4px solid #0078d4; }
+
         .result-title { font-size: 18px; font-weight: bold; color: #004080; text-decoration: none; }
         .result-title:hover { text-decoration: underline; }
         .result-actions { font-size: 13px; margin-top: 6px; }
@@ -46,15 +53,20 @@
             Geen documenten gevonden die voldoen aan je zoekopdracht.
         </div>
         
-        <div class="result-item" th:each="doc : ${results}">
+        <!-- Dynamische klasse toevoegen op basis van sourceSystem (kleine letters gemaakt voor de zekerheid) -->
+        <div class="result-item" 
+             th:each="doc : ${results}"
+             th:classappend="${doc.sourceSystem != null ? #strings.toLowerCase(doc.sourceSystem) : 'alfresco'}">
+             
             <!-- Titel met direct download/inhoud link -->
             <a class="result-title" th:href="${doc.url != null ? doc.url : '#'}" th:text="${doc.title}" target="_blank">Document Titel</a>
             
             <div class="result-snippet" th:text="${doc.content}">Inhoud snippet...</div>
             
-            <!-- Link naar de exacte maplocatie in Alfresco -->
+            <!-- Dynamische mappenlink afhankelijk van het platform -->
             <div class="result-actions" th:if="${doc.folderUrl != null}">
-                📁 <a th:href="${doc.folderUrl}" target="_blank">Open in Alfresco mappenstructuur</a>
+                <span th:if="${doc.sourceSystem == 'SharePoint'}">📂 <a th:href="${doc.folderUrl}" target="_blank">Open in SharePoint map</a></span>
+                <span th:unless="${doc.sourceSystem == 'SharePoint'}">📁 <a th:href="${doc.folderUrl}" target="_blank">Open in Alfresco mappenstructuur</a></span>
             </div>
             
             <!-- Metadata overzicht -->

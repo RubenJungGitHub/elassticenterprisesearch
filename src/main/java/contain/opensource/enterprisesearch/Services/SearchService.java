@@ -26,14 +26,15 @@ public class SearchService {
             if (query == null || query.trim().isEmpty()) {
                 response = esClient.search(s -> s
                         .index("enterprise-search-index")
+                        .size(100) // <-- VOEG DIT TOE (voor lege zoekopdracht / matchAll)
                         .query(q -> q.matchAll(m -> m)),
                         EnterpriseSearchDocument.class);
             } else {
-                // Gebruik een bool-query om zowel normale multi_match als partial title wildcards te ondersteunen
                 String wildcardQuery = "*" + query.toLowerCase() + "*";
                 
                 response = esClient.search(s -> s
                         .index("enterprise-search-index")
+                        .size(100) // <-- EN VOEG DIT OOK TOE (voor gerichte zoekopdrachten)
                         .query(q -> q.bool(b -> b
                                 .should(sh -> sh.multiMatch(m -> m
                                         .fields("title", "content", "classification")
